@@ -38,29 +38,24 @@ public class ChangelogGenerator {
         String version_new = args[1];
         headerPackageList.forEach((header, packageList) -> {
             String packages = "-- " + String.join(" -- ", packageList);
-            String format = "%%h";
             try {
 
                 String command = String.format("git log %s..%s --decorate --stat --name-status --format=%%s*%%an*%%H %s",
                         version_old, version_new, packages);
-                System.out.println(command);
                 Process process = Runtime.getRuntime().exec(command, null, new File("/Users/ruchira.agrawal/development/urbancompass"));
 
                 String newReleaseNotes = printMarkdown(header, version_new, process);
-                System.out.println(newReleaseNotes);
 
                 Parser parser = Parser.builder().build();
                 Node document = parser.parse(newReleaseNotes);
                 HtmlRenderer renderer = HtmlRenderer.builder().build();
-                String newReleaseNote =renderer.render(document);  // "<p>This is <em>Sparta</em></p>\n"
-    System.out.println(newReleaseNote);
+                String newReleaseNote =renderer.render(document);
                 String currentReleaseNotes = getFromWiki();
-                System.out.println(currentReleaseNotes);
 
                 JSONObject page = new JSONObject(currentReleaseNotes);
                 String currentReleaseNote =  page.getJSONObject("body").getJSONObject("storage").getString("value");
-                String updatedReleasetNote = newReleaseNote + currentReleaseNote;
-                page.getJSONObject("body").getJSONObject("storage").put("value", updatedReleasetNote);
+                String updatedReleaseNote = newReleaseNote + currentReleaseNote;
+                page.getJSONObject("body").getJSONObject("storage").put("value", updatedReleaseNote);
                 int currentVersion = page.getJSONObject("version").getInt("number");
                 page.getJSONObject("version").put("number", currentVersion + 1);
 
@@ -82,7 +77,6 @@ public class ChangelogGenerator {
         OkHttpClient client = new OkHttpClient().newBuilder()
                 .build();
         MediaType mediaType = MediaType.parse("application/json");
-        System.out.println(object);
         RequestBody body = RequestBody.create(mediaType, object );
         Request request = new Request.Builder()
                 .url("https://compass-tech.atlassian.net/wiki/rest/api/content/1405878960")
@@ -91,7 +85,6 @@ public class ChangelogGenerator {
                 .addHeader("Authorization", "Basic cnVjaGlyYS5hZ3Jhd2FsQGNvbXBhc3MuY29tOnBDWHdQMEM3cWdnWnRkcExLRUJLQUNFRQ==")
                 .build();
         Response response = client.newCall(request).execute();
-        System.out.println(response.body());
     }
 
 
@@ -110,8 +103,8 @@ public class ChangelogGenerator {
 
     private static String printMarkdown(String header, String version, Process process) throws IOException {
         StringBuilder sb = new StringBuilder()
-                .append(new Heading(header + "\n", 3))
-                .append(new Heading(version, 4));
+//                .append(new Heading(header + "\n", 3))
+                .append(new Heading(version, 3));
 
         String line;
         BufferedReader error = new BufferedReader(new InputStreamReader(process.getErrorStream()));
@@ -130,23 +123,23 @@ public class ChangelogGenerator {
                 } else {
                     if(fileNames !=null) {
                         sb.append(new UnorderedList<>(fileNames));
-                        sb.append(new Text("\n"));
+                        sb.append("\n");
                     }
                     String[] lines = line.split("\\*");
                     sb.append(new Text("\n"));
                     sb.append(new BoldText("Message: " + lines[0]));
-                    sb.append(new Text("\n"));
+                    sb.append("\n");
                     sb.append(new Text( "Commited By: " + lines[1]));
-                    sb.append(new Text("\n"));
+                    sb.append("\n");
                     String text = lines[2];
                     String url = "https://github.com/UrbanCompass/urbancompass/commit/"+lines[2];
                     sb.append(new Link(text, url));
-                    sb.append(new Text("\n"));
+                    sb.append("\n");
                 }
             } else {
-                sb.append(new Text("\n"));
+                sb.append("\n");
                 sb.append(new BoldText( "Files"));
-                sb.append(new Text("\n"));
+                sb.append("\n");
                 fileNames = new ArrayList<>();
 
             }
