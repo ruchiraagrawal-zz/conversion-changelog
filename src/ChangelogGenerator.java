@@ -82,7 +82,7 @@ public class ChangelogGenerator {
                 .url("https://compass-tech.atlassian.net/wiki/rest/api/content/1405878960")
                 .method("PUT", body)
                 .addHeader("Content-Type", "application/json")
-                .addHeader("Authorization", "Basic cnVjaGlyYS5hZ3Jhd2FsQGNvbXBhc3MuY29tOnBDWHdQMEM3cWdnWnRkcExLRUJLQUNFRQ==")
+                .addHeader("Authorization", "Basic ")
                 .build();
         Response response = client.newCall(request).execute();
     }
@@ -94,7 +94,7 @@ public class ChangelogGenerator {
         Request request = new Request.Builder()
                 .url("https://compass-tech.atlassian.net/wiki/rest/api/content/1405878960?expand=body.storage,version").get()
                 .addHeader("Content-Type", "application/json")
-                .addHeader("Authorization", "Basic cnVjaGlyYS5hZ3Jhd2FsQGNvbXBhc3MuY29tOnBDWHdQMEM3cWdnWnRkcExLRUJLQUNFRQ==")
+                .addHeader("Authorization", "Basic ")
                 .build();
         Response response = client.newCall(request).execute();
         return response.body().string();
